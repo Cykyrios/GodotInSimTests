@@ -2,11 +2,49 @@
 
 [ext_resource type="Script" path="res://src/insim_test_suite.gd" id="1_jp6ns"]
 
-[node name="Control" type="Control"]
-layout_mode = 3
+[node name="InSimTests" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jp6ns")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="StandardPacketsVBox" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StandardPacketsLabel" type="Label" parent="ScrollContainer/HBoxContainer/StandardPacketsVBox"]
+layout_mode = 2
+text = "Standard packets:"
+
+[node name="TinyPacketsVBox" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TinyPacketsLabel" type="Label" parent="ScrollContainer/HBoxContainer/TinyPacketsVBox"]
+layout_mode = 2
+text = "TINY packets:"
+
+[node name="SmallPacketsVBox" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SmallPacketsLabel" type="Label" parent="ScrollContainer/HBoxContainer/SmallPacketsVBox"]
+layout_mode = 2
+text = "SMALL packets:"
+
+[node name="TTCPacketsVBox" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TTCPacketsLabel" type="Label" parent="ScrollContainer/HBoxContainer/TTCPacketsVBox"]
+layout_mode = 2
+text = "TTC packets:"
