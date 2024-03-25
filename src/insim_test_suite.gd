@@ -289,6 +289,15 @@ func test_HCP_packet() -> void:
 	insim.send_packet(packet)
 
 
+func test_JRR_packet() -> void:
+	var packet := InSimJRRPacket.new()
+	packet.player_id = 1
+	packet.action = InSim.JRRAction.JRR_RESET_NO_REPAIR
+	packet.start_pos.flags |= 0x80
+	packet.start_pos.gis_position = Vector3(randf_range(-2000, 2000), randf_range(-2000, 2000), 50)
+	insim.send_packet(packet)
+
+
 func test_MAL_packet() -> void:
 	var packet := InSimMALPacket.new()
 	packet.num_mods = 0
@@ -350,6 +359,14 @@ func test_PLH_packet() -> void:
 	insim.send_packet(packet)
 
 
+func test_RIP_packet() -> void:
+	var packet := InSimRIPPacket.new()
+	packet.req_i = 1
+	packet.replay_name = "temp_spr"
+	packet.gis_c_time = 100
+	insim.send_packet(packet)
+
+
 func test_SCC_packet() -> void:
 	var packet := InSimSCCPacket.new()
 	packet.view_plid = 0
@@ -382,6 +399,36 @@ func test_SFP_packet() -> void:
 	insim.send_packet(packet)
 
 
+func test_SMALL_packet(subtype: InSim.Small) -> void:
+	var value := 0
+	match subtype:
+		InSim.Small.SMALL_SSP:
+			value = 500
+		InSim.Small.SMALL_SSG:
+			value = 500
+		InSim.Small.SMALL_TMS:
+			value = randi_range(0, 1)
+		InSim.Small.SMALL_STP:
+			value = 50
+		InSim.Small.SMALL_NLI:
+			value = 1000
+		InSim.Small.SMALL_ALC:
+			value = InSim.Car.CAR_XRT
+		InSim.Small.SMALL_LCS:
+			for loop in 8:
+				insim.send_packet(InSimSmallPacket.new(0, subtype, randi_range(0, 0xffffff)))
+				await get_tree().create_timer(0.25).timeout
+			insim.send_packet(InSimSmallPacket.new(0, subtype, 0x1f))
+			return
+		InSim.Small.SMALL_LCL:
+			for loop in 8:
+				insim.send_packet(InSimSmallPacket.new(0, subtype, randi_range(0, 0xffffff)))
+				await get_tree().create_timer(0.25).timeout
+			insim.send_packet(InSimSmallPacket.new(0, subtype, 0x7f))
+			return
+	insim.send_packet(InSimSmallPacket.new(1, subtype, value))
+
+
 func test_SSH_packet() -> void:
 	var packet := InSimSSHPacket.new()
 	packet.req_i = 1
@@ -389,12 +436,46 @@ func test_SSH_packet() -> void:
 	insim.send_packet(packet)
 
 
+func test_TINY_packet(subtype: InSim.Tiny) -> void:
+	# TINY_CLOSE not included in sendables as it is handled specifically through InSim.close()
+	var sendable_tiny_packets: Array[InSim.Tiny] = [
+		InSim.Tiny.TINY_VER,
+		InSim.Tiny.TINY_PING,
+		InSim.Tiny.TINY_VTC,
+		InSim.Tiny.TINY_SCP,
+		InSim.Tiny.TINY_SST,
+		InSim.Tiny.TINY_GTH,
+		InSim.Tiny.TINY_ISM,
+		InSim.Tiny.TINY_NCN,
+		InSim.Tiny.TINY_NPL,
+		InSim.Tiny.TINY_RES,
+		InSim.Tiny.TINY_NLP,
+		InSim.Tiny.TINY_MCI,
+		InSim.Tiny.TINY_REO,
+		InSim.Tiny.TINY_RST,
+		InSim.Tiny.TINY_AXI,
+		InSim.Tiny.TINY_RIP,
+		InSim.Tiny.TINY_NCI,
+		InSim.Tiny.TINY_ALC,
+		InSim.Tiny.TINY_AXM,
+		InSim.Tiny.TINY_SLC,
+		InSim.Tiny.TINY_MAL,
+		InSim.Tiny.TINY_PLH,
+	]
+	if subtype in sendable_tiny_packets:
+		insim.send_packet(InSimTinyPacket.new(1, subtype))
+	elif subtype == InSim.Tiny.TINY_CLOSE:
+		insim.close()
+
+
 func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 	match packet_type:
-		#InSim.Packet.ISP_TINY:
-			#test_TINY_packet()
-		#InSim.Packet.ISP_SMALL:
-			#test_SMALL_packet()
+		InSim.Packet.ISP_ISI:
+			initialize_insim()
+		InSim.Packet.ISP_TINY:
+			test_TINY_packet(subtype)
+		InSim.Packet.ISP_SMALL:
+			test_SMALL_packet(subtype)
 		InSim.Packet.ISP_SCH:
 			test_SCH_packet()
 		InSim.Packet.ISP_SFP:
@@ -419,8 +500,8 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_BFN_packet()
 		InSim.Packet.ISP_BTN:
 			test_BTN_packet()
-		#InSim.Packet.ISP_RIP:
-			#test_RIP_packet()
+		InSim.Packet.ISP_RIP:
+			test_RIP_packet()
 		InSim.Packet.ISP_SSH:
 			test_SSH_packet()
 		InSim.Packet.ISP_PLC:
@@ -429,8 +510,8 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			#test_AXM_packet()
 		InSim.Packet.ISP_HCP:
 			test_HCP_packet()
-		#InSim.Packet.ISP_JRR:
-			#test_JRR_packet()
+		InSim.Packet.ISP_JRR:
+			test_JRR_packet()
 		InSim.Packet.ISP_OCO:
 			test_OCO_packet()
 		#InSim.Packet.ISP_TTC:
