@@ -240,6 +240,207 @@ func print_packet(packet: InSimPacket) -> void:
 	print("%s: %s" % [InSim.Packet.keys()[packet.type], packet.get_dictionary()])
 
 
+func test_BFN_packet() -> void:
+	var packet := InSimBFNPacket.new()
+	packet.subtype = InSim.ButtonFunction.BFN_DEL_BTN
+	packet.ucid = 0
+	packet.click_id = 1
+	insim.send_packet(packet)
+
+
+func test_BTN_packet() -> void:
+	var packet := InSimBTNPacket.new()
+	packet.ucid = 0
+	packet.click_id = 1
+	packet.button_style = InSim.ButtonStyle.ISB_DARK | InSim.ButtonStyle.ISB_RIGHT
+	packet.left = 100
+	packet.top = 100
+	packet.width = 30
+	packet.height = 10
+	packet.text = "Test ^1button"
+	insim.send_packet(packet)
+
+
+func test_CPP_packet() -> void:
+	var packet := InSimCPPPacket.new()
+	packet.view_plid = 255
+	packet.ingame_cam = 255
+	packet.gis_position = Vector3(20, 0, 2)
+	packet.gis_angles = Vector3(deg_to_rad(-20), deg_to_rad(-150), deg_to_rad(20))
+	packet.fov = 70
+	packet.gis_time = 0.5
+	packet.flags = InSim.State.ISS_SHIFTU | InSim.State.ISS_SHIFTU_FOLLOW
+	insim.send_packet(packet)
+	await get_tree().create_timer(1).timeout
+	packet = InSimCPPPacket.new()
+	packet.view_plid = 255
+	packet.ingame_cam = 255
+	packet.gis_position = Vector3(20, 0, 20)
+	packet.gis_angles = Vector3(deg_to_rad(0), deg_to_rad(0), deg_to_rad(50))
+	packet.gis_time = 1.5
+	packet.flags = InSim.State.ISS_SHIFTU | InSim.State.ISS_SHIFTU_FOLLOW
+	insim.send_packet(packet)
+	await get_tree().create_timer(2).timeout
+
+
+func test_HCP_packet() -> void:
+	var packet := InSimHCPPacket.new()
+	packet.car_hcp[InSim.Car.CAR_XFG].h_tres = 50
+	insim.send_packet(packet)
+
+
+func test_MAL_packet() -> void:
+	var packet := InSimMALPacket.new()
+	packet.num_mods = 0
+	insim.send_packet(packet)
+
+
+func test_MSL_packet() -> void:
+	var packet := InSimMSLPacket.new()
+	packet.msg = "This is a ^1TEST^8 message - ^1日本語^0, etc."
+	insim.send_packet(packet)
+
+
+func test_MST_packet() -> void:
+	var packet := InSimMSTPacket.new()
+	packet.msg = "This is a ^2TEST^8 message - ^7日本語^9, etc."
+	insim.send_packet(packet)
+
+
+func test_MSX_packet() -> void:
+	var packet := InSimMSXPacket.new()
+	packet.msg = "This is a ^3TEST^8 message - ^9日本語^6, etc."
+	insim.send_packet(packet)
+
+
+func test_MTC_packet() -> void:
+	var packet := InSimMTCPacket.new()
+	packet.ucid = 255
+	packet.text = "This is a test, ^1with ^2colors ^3and ^4日本語 ^5too^9.^7^^"
+	insim.send_packet(packet)
+
+
+func test_OCO_packet() -> void:
+	for i in 4:
+		var packet := InSimOCOPacket.new()
+		packet.oco_action = InSim.OCOAction.OCO_LIGHTS_SET
+		packet.index = 240
+		packet.identifier = 0
+		packet.data = randi_range(0, 16)
+		insim.send_packet(packet)
+		await get_tree().create_timer(0.5).timeout
+
+
+func test_PLC_packet() -> void:
+	var packet := InSimPLCPacket.new()
+	packet.ucid = 0
+	packet.cars = InSim.Car.CAR_XRG
+	insim.send_packet(packet)
+
+
+func test_PLH_packet() -> void:
+	var packet := InSimPLHPacket.new()
+	packet.req_i = 1
+	packet.nump = 1
+	var hcap := PlayerHandicap.new()
+	hcap.player_id = 2
+	hcap.flags |= 2
+	hcap.h_tres = 50
+	packet.hcaps.append(hcap)
+	insim.send_packet(packet)
+
+
+func test_SCC_packet() -> void:
+	var packet := InSimSCCPacket.new()
+	packet.view_plid = 0
+	packet.ingame_cam = InSim.View.VIEW_CAM
+	insim.send_packet(packet)
+
+
+func test_SCH_packet() -> void:
+	# There seems to be an issue with this packet on LFS's side: changing view with V works fine,
+	# but H does not toggle message history, I does not switch ignition, L does not turn pit limiter on, etc.
+	# Sending 9 does work for hazard lights.
+	var packet := InSimSCHPacket.new()
+	packet.char_byte = "V".unicode_at(0)
+	packet.flags = 0
+	insim.send_packet(packet)
+	packet = InSimSCHPacket.new()
+	packet.char_byte = "H".unicode_at(0)
+	packet.flags = 0
+	insim.send_packet(packet)
+	packet = InSimSCHPacket.new()
+	packet.char_byte = "9".unicode_at(0)
+	packet.flags = 0
+	insim.send_packet(packet)
+
+
+func test_SFP_packet() -> void:
+	var packet := InSimSFPPacket.new()
+	packet.flag = InSim.State.ISS_SHOW_2D
+	packet.off_on = 0
+	insim.send_packet(packet)
+
+
+func test_SSH_packet() -> void:
+	var packet := InSimSSHPacket.new()
+	packet.req_i = 1
+	packet.screenshot_name = "super_test"
+	insim.send_packet(packet)
+
+
+func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
+	match packet_type:
+		#InSim.Packet.ISP_TINY:
+			#test_TINY_packet()
+		#InSim.Packet.ISP_SMALL:
+			#test_SMALL_packet()
+		InSim.Packet.ISP_SCH:
+			test_SCH_packet()
+		InSim.Packet.ISP_SFP:
+			test_SFP_packet()
+		InSim.Packet.ISP_SCC:
+			test_SCC_packet()
+		InSim.Packet.ISP_CPP:
+			test_CPP_packet()
+		InSim.Packet.ISP_MST:
+			test_MST_packet()
+		InSim.Packet.ISP_MTC:
+			test_MTC_packet()
+		#InSim.Packet.ISP_MOD:
+			#test_MOD_packet()
+		#InSim.Packet.ISP_REO:
+			#test_REO_packet()
+		InSim.Packet.ISP_MSX:
+			test_MSX_packet()
+		InSim.Packet.ISP_MSL:
+			test_MSL_packet()
+		InSim.Packet.ISP_BFN:
+			test_BFN_packet()
+		InSim.Packet.ISP_BTN:
+			test_BTN_packet()
+		#InSim.Packet.ISP_RIP:
+			#test_RIP_packet()
+		InSim.Packet.ISP_SSH:
+			test_SSH_packet()
+		InSim.Packet.ISP_PLC:
+			test_PLC_packet()
+		#InSim.Packet.ISP_AXM:
+			#test_AXM_packet()
+		InSim.Packet.ISP_HCP:
+			test_HCP_packet()
+		#InSim.Packet.ISP_JRR:
+			#test_JRR_packet()
+		InSim.Packet.ISP_OCO:
+			test_OCO_packet()
+		#InSim.Packet.ISP_TTC:
+			#test_TTC_packet()
+		InSim.Packet.ISP_MAL:
+			test_MAL_packet()
+		InSim.Packet.ISP_PLH:
+			test_PLH_packet()
+
+
 func _on_packet_received(packet: InSimPacket) -> void:
 	mark_tested_packet_button(packet)
 	if packet is InSimMCIPacket or packet is InSimNLPPacket:
