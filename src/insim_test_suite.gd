@@ -240,6 +240,14 @@ func print_packet(packet: InSimPacket) -> void:
 	print("%s: %s" % [InSim.Packet.keys()[packet.type], packet.get_dictionary()])
 
 
+func test_AXM_packet() -> void:
+	var packet := InSimAXMPacket.new()
+	packet.req_i = 1
+	packet.num_objects = 0
+	packet.pmo_action = InSim.PMOAction.PMO_GET_Z
+	insim.send_packet(packet)
+
+
 func test_BFN_packet() -> void:
 	var packet := InSimBFNPacket.new()
 	packet.subtype = InSim.ButtonFunction.BFN_DEL_BTN
@@ -468,6 +476,18 @@ func test_TINY_packet(subtype: InSim.Tiny) -> void:
 		insim.close()
 
 
+func test_TTC_packet(subtype: InSim.TTC) -> void:
+	match subtype:
+		InSim.TTC.TTC_NONE:
+			pass
+		InSim.TTC.TTC_SEL:
+			insim.send_packet(InSimTTCPacket.new(1, subtype, 0))
+		InSim.TTC.TTC_SEL_START:
+			insim.send_packet(InSimTTCPacket.new(1, subtype, 0))
+		InSim.TTC.TTC_SEL_STOP:
+			insim.send_packet(InSimTTCPacket.new(1, subtype, 0))
+
+
 func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 	match packet_type:
 		InSim.Packet.ISP_ISI:
@@ -506,16 +526,16 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_SSH_packet()
 		InSim.Packet.ISP_PLC:
 			test_PLC_packet()
-		#InSim.Packet.ISP_AXM:
-			#test_AXM_packet()
+		InSim.Packet.ISP_AXM:
+			test_AXM_packet()
 		InSim.Packet.ISP_HCP:
 			test_HCP_packet()
 		InSim.Packet.ISP_JRR:
 			test_JRR_packet()
 		InSim.Packet.ISP_OCO:
 			test_OCO_packet()
-		#InSim.Packet.ISP_TTC:
-			#test_TTC_packet()
+		InSim.Packet.ISP_TTC:
+			test_TTC_packet(subtype)
 		InSim.Packet.ISP_MAL:
 			test_MAL_packet()
 		InSim.Packet.ISP_PLH:
