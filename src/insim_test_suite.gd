@@ -312,6 +312,13 @@ func test_MAL_packet() -> void:
 	insim.send_packet(packet)
 
 
+func test_MOD_packet() -> void:
+	var packet := InSimMODPacket.new()
+	packet.width = 1280
+	packet.height = 720
+	insim.send_packet(packet)
+
+
 func test_MSL_packet() -> void:
 	var packet := InSimMSLPacket.new()
 	packet.msg = "This is a ^1TEST^8 message - ^1日本語^0, etc."
@@ -364,6 +371,16 @@ func test_PLH_packet() -> void:
 	hcap.flags |= 2
 	hcap.h_tres = 50
 	packet.hcaps.append(hcap)
+	insim.send_packet(packet)
+
+
+func test_REO_packet() -> void:
+	var packet := InSimREOPacket.new()
+	packet.num_players = 4
+	packet.player_ids[0] = 1
+	packet.player_ids[1] = 2
+	packet.player_ids[2] = 3
+	packet.player_ids[3] = 4
 	insim.send_packet(packet)
 
 
@@ -508,10 +525,10 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_MST_packet()
 		InSim.Packet.ISP_MTC:
 			test_MTC_packet()
-		#InSim.Packet.ISP_MOD:
-			#test_MOD_packet()
-		#InSim.Packet.ISP_REO:
-			#test_REO_packet()
+		InSim.Packet.ISP_MOD:
+			test_MOD_packet()
+		InSim.Packet.ISP_REO:
+			test_REO_packet()
 		InSim.Packet.ISP_MSX:
 			test_MSX_packet()
 		InSim.Packet.ISP_MSL:
