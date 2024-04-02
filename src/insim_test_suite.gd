@@ -267,6 +267,7 @@ func test_BFN_packet() -> void:
 	packet.subtype = InSim.ButtonFunction.BFN_DEL_BTN
 	packet.ucid = 0
 	packet.click_id = 1
+	packet.click_max = 2
 	insim.send_packet(packet)
 
 
@@ -274,12 +275,24 @@ func test_BTN_packet() -> void:
 	var packet := InSimBTNPacket.new()
 	packet.ucid = 0
 	packet.click_id = 1
-	packet.button_style = InSim.ButtonStyle.ISB_DARK | InSim.ButtonStyle.ISB_RIGHT
-	packet.left = 100
+	packet.button_style = InSim.ButtonStyle.ISB_DARK | InSim.ButtonStyle.ISB_CLICK
+	packet.type_in = 32
+	packet.left = 90
 	packet.top = 100
 	packet.width = 30
 	packet.height = 10
-	packet.text = "Test ^1button"
+	packet.text = "Typein ^1button"
+	packet.caption = "^2type ^3in ^4test"
+	insim.send_packet(packet)
+	packet = InSimBTNPacket.new()
+	packet.ucid = 0
+	packet.click_id = 2
+	packet.button_style = InSim.ButtonStyle.ISB_DARK | InSim.ButtonStyle.ISB_CLICK
+	packet.left = 120
+	packet.top = 100
+	packet.width = 30
+	packet.height = 10
+	packet.text = "Click ^1button"
 	insim.send_packet(packet)
 
 
@@ -307,7 +320,7 @@ func test_CPP_packet() -> void:
 
 func test_HCP_packet() -> void:
 	var packet := InSimHCPPacket.new()
-	packet.car_hcp[InSim.Car.CAR_XFG].h_tres = 50
+	packet.car_hcp[InSim.Car.values().find(InSim.Car.CAR_FBM) - 1].h_tres = 50
 	insim.send_packet(packet)
 
 
@@ -371,7 +384,7 @@ func test_OCO_packet() -> void:
 
 func test_PLC_packet() -> void:
 	var packet := InSimPLCPacket.new()
-	packet.ucid = 0
+	packet.ucid = 1
 	packet.cars = InSim.Car.CAR_XRG
 	insim.send_packet(packet)
 
