@@ -205,6 +205,18 @@ func create_packet(type: InSim.Packet, subtype := -1) -> InSimPacket:
 			packet = InSimMALPacket.new()
 		InSim.Packet.ISP_PLH:
 			packet = InSimPLHPacket.new()
+		InSim.Packet.IRP_ARQ:
+			packet = RelayARQPacket.new()
+		InSim.Packet.IRP_ARP:
+			packet = RelayARPPacket.new()
+		InSim.Packet.IRP_HLR:
+			packet = RelayHLRPacket.new()
+		InSim.Packet.IRP_HOS:
+			packet = RelayHOSPacket.new()
+		InSim.Packet.IRP_SEL:
+			packet = RelaySELPacket.new()
+		InSim.Packet.IRP_ERR:
+			packet = RelayERRPacket.new()
 	return packet
 
 
@@ -232,12 +244,14 @@ func mark_tested_packet_button(packet: InSimPacket) -> void:
 			button = ttc_packets_vbox.get_child((packet as InSimTTCPacket).sub_type + 1) as Button
 			button.modulate = PACKET_TESTED_COLOR
 		_:
-			button = standard_packets_vbox.get_child(packet.type + 1) as Button
+			var relay_offset := 0 if packet.type < InSim.Packet.IRP_ARQ else \
+					InSim.Packet.ISP_PLH - InSim.Packet.IRP_ARQ + 1
+			button = standard_packets_vbox.get_child(packet.type + 1 + relay_offset) as Button
 			button.modulate = PACKET_TESTED_COLOR
 
 
 func print_packet(packet: InSimPacket) -> void:
-	print("%s: %s" % [InSim.Packet.keys()[packet.type], packet.get_dictionary()])
+	print("%s: %s" % [InSim.Packet.keys()[InSim.Packet.values().find(packet.type)], packet.get_dictionary()])
 
 
 func test_AXM_packet() -> void:
@@ -505,6 +519,24 @@ func test_TTC_packet(subtype: InSim.TTC) -> void:
 			insim.send_packet(InSimTTCPacket.new(1, subtype, 0))
 
 
+func test_relay_ARQ_packet() -> void:
+	var packet := RelayARQPacket.new()
+	insim.send_packet(packet)
+
+
+func test_relay_HLR_packet() -> void:
+	var packet := RelayHLRPacket.new()
+	insim.send_packet(packet)
+
+
+func test_relay_SEL_packet() -> void:
+	var packet := RelaySELPacket.new()
+	packet.req_i = 1
+	packet.host_name = "insim test"
+	packet.admin = "admin_test"
+	insim.send_packet(packet)
+
+
 func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 	match packet_type:
 		InSim.Packet.ISP_ISI:
@@ -557,6 +589,12 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_MAL_packet()
 		InSim.Packet.ISP_PLH:
 			test_PLH_packet()
+		InSim.Packet.IRP_ARQ:
+			test_relay_ARQ_packet()
+		InSim.Packet.IRP_HLR:
+			test_relay_HLR_packet()
+		InSim.Packet.IRP_SEL:
+			test_relay_SEL_packet()
 
 
 func _on_packet_received(packet: InSimPacket) -> void:
