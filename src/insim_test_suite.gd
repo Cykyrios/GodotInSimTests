@@ -5,7 +5,11 @@ const NON_STANDARD_PACKETS := [InSim.Packet.ISP_TINY,
 		InSim.Packet.ISP_SMALL, InSim.Packet.ISP_TTC]
 const PACKET_TESTED_COLOR := Color(0.2, 1, 0.2)
 
+@export var print_outsim_outgauge_packets := false
+
 var insim := InSim.new()
+var outgauge := OutGauge.new()
+var outsim := OutSim.new()
 
 @onready var standard_packets_vbox: VBoxContainer = %StandardPacketsVBox
 @onready var tiny_packets_vbox: VBoxContainer = %TinyPacketsVBox
@@ -18,6 +22,12 @@ func _ready() -> void:
 	add_buttons()
 	connect_signals()
 	initialize_insim()
+	add_child(outgauge)
+	outgauge.initialize()
+	add_child(outsim)
+	outsim.initialize(0x1ff)
+	var _discard := outgauge.packet_received.connect(_on_outgauge_packet_received)
+	_discard = outsim.packet_received.connect(_on_outsim_packet_received)
 
 
 func _exit_tree() -> void:
@@ -615,6 +625,16 @@ func _on_packet_received(packet: InSimPacket) -> void:
 	if packet is InSimMCIPacket or packet is InSimNLPPacket:
 		return
 	print_packet(packet)
+
+
+func _on_outgauge_packet_received(packet: OutGaugePacket) -> void:
+	if print_outsim_outgauge_packets:
+		print("OutGauge: %s" % [packet.time])
+
+
+func _on_outsim_packet_received(packet: OutSimPacket) -> void:
+	if print_outsim_outgauge_packets:
+		print("OutSim: %s" % [packet.outsim_pack.time])
 
 
 func _on_packet_sent(packet: InSimPacket) -> void:
