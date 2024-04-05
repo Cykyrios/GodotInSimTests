@@ -9,6 +9,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jp6ns")
+init_flag_local = true
+init_flag_mso_colors = true
+init_flag_nlp = true
+init_flag_mci = true
+init_flag_con = true
+init_flag_obh = true
+init_flag_hlv = true
+init_flag_axm_load = true
+init_flag_axm_edit = true
+init_flag_req_join = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 2

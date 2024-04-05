@@ -5,6 +5,28 @@ const NON_STANDARD_PACKETS := [InSim.Packet.ISP_TINY,
 		InSim.Packet.ISP_SMALL, InSim.Packet.ISP_TTC]
 const PACKET_TESTED_COLOR := Color(0.2, 1, 0.2)
 
+@export_category("InSim Connection")
+@export var address := "127.0.0.1"
+@export var port := 29_999
+@export var use_udp := false
+@export var nlp_mci_use_udp := true
+@export var use_relay := false
+@export_category("InSim Init Data")
+@export_group("Init Flags")
+@export var init_flag_local := false
+@export var init_flag_mso_colors := false
+@export var init_flag_nlp := false
+@export var init_flag_mci := false
+@export var init_flag_con := false
+@export var init_flag_obh := false
+@export var init_flag_hlv := false
+@export var init_flag_axm_load := false
+@export var init_flag_axm_edit := false
+@export var init_flag_req_join := false
+@export_group("")
+@export var interval := 1000
+@export var admin_password := ""
+@export_category("Debug Printing")
 @export var print_nlp_mci_packets := false
 @export var print_outsim_outgauge_packets := false
 
@@ -233,13 +255,29 @@ func create_packet(type: InSim.Packet, subtype := -1) -> InSimPacket:
 
 func initialize_insim() -> void:
 	var init_data := InSimInitializationData.new()
-	init_data.flags |= InSim.InitFlag.ISF_LOCAL | InSim.InitFlag.ISF_MSO_COLS \
-			| InSim.InitFlag.ISF_NLP | InSim.InitFlag.ISF_MCI | InSim.InitFlag.ISF_CON \
-			| InSim.InitFlag.ISF_OBH | InSim.InitFlag.ISF_HLV | InSim.InitFlag.ISF_AXM_LOAD \
-			| InSim.InitFlag.ISF_AXM_EDIT| InSim.InitFlag.ISF_REQ_JOIN
-	init_data.interval = 500
 	init_data.i_name = "GIS Tests"
-	insim.initialize(init_data)
+	var flags := 0 | (InSim.InitFlag.ISF_LOCAL if init_flag_local else 0) \
+			| (InSim.InitFlag.ISF_MSO_COLS if init_flag_mso_colors else 0) \
+			| (InSim.InitFlag.ISF_NLP if init_flag_nlp else 0) \
+			| (InSim.InitFlag.ISF_MCI if init_flag_mci else 0) \
+			| (InSim.InitFlag.ISF_CON if init_flag_con else 0) \
+			| (InSim.InitFlag.ISF_OBH if init_flag_obh else 0) \
+			| (InSim.InitFlag.ISF_HLV if init_flag_hlv else 0) \
+			| (InSim.InitFlag.ISF_AXM_LOAD if init_flag_axm_load else 0) \
+			| (InSim.InitFlag.ISF_AXM_EDIT if init_flag_axm_edit else 0) \
+			| (InSim.InitFlag.ISF_REQ_JOIN if init_flag_req_join else 0)
+	init_data.flags = flags
+	init_data.interval = interval
+	init_data.admin = admin_password
+	if use_udp:
+		init_data.udp_port = 0
+		init_data.udp_port = port + 1
+	else:
+		if nlp_mci_use_udp:
+			init_data.udp_port = port + 1
+		else:
+			init_data.udp_port = 0
+	insim.initialize(address, port, init_data, use_relay, false if use_relay else use_udp)
 
 
 func mark_tested_packet_button(packet: InSimPacket) -> void:
