@@ -5,6 +5,7 @@ const NON_STANDARD_PACKETS := [InSim.Packet.ISP_TINY,
 		InSim.Packet.ISP_SMALL, InSim.Packet.ISP_TTC]
 const PACKET_TESTED_COLOR := Color(0.2, 1, 0.2)
 
+@export var print_nlp_mci_packets := false
 @export var print_outsim_outgauge_packets := false
 
 var insim := InSim.new()
@@ -622,7 +623,7 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 
 func _on_packet_received(packet: InSimPacket) -> void:
 	mark_tested_packet_button(packet)
-	if packet is InSimMCIPacket or packet is InSimNLPPacket:
+	if (packet is InSimMCIPacket or packet is InSimNLPPacket) and not print_nlp_mci_packets:
 		return
 	print_packet(packet)
 
