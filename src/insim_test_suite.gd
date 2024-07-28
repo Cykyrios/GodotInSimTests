@@ -1,8 +1,7 @@
 extends MarginContainer
 
 
-const NON_STANDARD_PACKETS := [InSim.Packet.ISP_TINY,
-		InSim.Packet.ISP_SMALL, InSim.Packet.ISP_TTC]
+const NON_STANDARD_PACKETS := [InSim.Packet.ISP_TINY, InSim.Packet.ISP_SMALL, InSim.Packet.ISP_TTC]
 const PACKET_TESTED_COLOR := Color(0.2, 1, 0.2)
 
 @export_category("InSim Connection")
@@ -490,8 +489,9 @@ func test_SCC_packet() -> void:
 
 
 func test_SCH_packet() -> void:
-	# There seems to be an issue with this packet on LFS's side: changing view with V works fine,
-	# but H does not toggle message history, I does not switch ignition, L does not turn pit limiter on, etc.
+	# NOTE: There seems to be an issue with this packet on LFS's side: changing view with V
+	# works fine, but H does not toggle message history, I does not switch ignition,
+	# L does not turn pit limiter on, etc.
 	# Sending 9 does work for hazard lights.
 	var packet := InSimSCHPacket.new()
 	packet.char_byte = "V".unicode_at(0)
