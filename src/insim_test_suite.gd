@@ -238,6 +238,8 @@ func create_packet(type: InSim.Packet, subtype := -1) -> InSimPacket:
 			packet = InSimMALPacket.new()
 		InSim.Packet.ISP_PLH:
 			packet = InSimPLHPacket.new()
+		InSim.Packet.ISP_IPB:
+			packet = InSimIPBPacket.new()
 		InSim.Packet.IRP_ARQ:
 			packet = RelayARQPacket.new()
 		InSim.Packet.IRP_ARP:
@@ -294,7 +296,7 @@ func mark_tested_packet_button(packet: InSimPacket) -> void:
 			button.modulate = PACKET_TESTED_COLOR
 		_:
 			var relay_offset := 0 if packet.type < InSim.Packet.IRP_ARQ else \
-					InSim.Packet.ISP_PLH - InSim.Packet.IRP_ARQ + 1
+					InSim.Packet.ISP_IPB - InSim.Packet.IRP_ARQ + 1
 			button = standard_packets_vbox.get_child(packet.type + 1 + relay_offset) as Button
 			button.modulate = PACKET_TESTED_COLOR
 
@@ -370,6 +372,18 @@ func test_CPP_packet() -> void:
 func test_HCP_packet() -> void:
 	var packet := InSimHCPPacket.new()
 	packet.car_hcp[InSim.Car.values().find(InSim.Car.CAR_FBM) - 1].h_tres = 50
+	insim.send_packet(packet)
+
+
+func test_IPB_packet() -> void:
+	var packet := InSimIPBPacket.new()
+	var ip_count := 3
+	packet.numb = ip_count
+	for i in ip_count:
+		var ip := IPAddress.new()
+		for j in 4:
+			ip.address[j] = randi_range(0, 255)
+		packet.ban_ips.append(ip)
 	insim.send_packet(packet)
 
 
@@ -562,6 +576,7 @@ func test_TINY_packet(subtype: InSim.Tiny) -> void:
 		InSim.Tiny.TINY_SLC,
 		InSim.Tiny.TINY_MAL,
 		InSim.Tiny.TINY_PLH,
+		InSim.Tiny.TINY_IPB,
 	]
 	if subtype in sendable_tiny_packets:
 		insim.send_packet(InSimTinyPacket.new(1, subtype))
@@ -651,6 +666,8 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_MAL_packet()
 		InSim.Packet.ISP_PLH:
 			test_PLH_packet()
+		InSim.Packet.ISP_IPB:
+			test_IPB_packet()
 		InSim.Packet.IRP_ARQ:
 			test_relay_ARQ_packet()
 		InSim.Packet.IRP_HLR:
