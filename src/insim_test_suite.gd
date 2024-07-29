@@ -381,7 +381,8 @@ func test_IPB_packet() -> void:
 	for i in ip_count:
 		var ip := IPAddress.new()
 		for j in 4:
-			ip.address[j] = randi_range(0, 255)
+			ip.address_array[j] = randi_range(0, 255)
+		ip.fill_from_array(ip.address_array.duplicate())
 		packet.ban_ips.append(ip)
 	insim.send_packet(packet)
 
