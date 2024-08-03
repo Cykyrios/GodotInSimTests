@@ -305,6 +305,14 @@ func print_packet(packet: InSimPacket) -> void:
 	print("%s: %s" % [InSim.Packet.keys()[InSim.Packet.values().find(packet.type)], packet.get_dictionary()])
 
 
+func test_ACR_packet() -> void:
+	var packet := InSimMSTPacket.new()
+	packet.msg = "/laps 42"
+	insim.send_packet(packet)
+	packet.msg = "/wind=2"
+	insim.send_packet(packet)
+
+
 func test_AXM_packet() -> void:
 	var packet := InSimAXMPacket.new()
 	packet.req_i = 1
@@ -656,6 +664,8 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_PLC_packet()
 		InSim.Packet.ISP_AXM:
 			test_AXM_packet()
+		InSim.Packet.ISP_ACR:
+			test_ACR_packet()
 		InSim.Packet.ISP_HCP:
 			test_HCP_packet()
 		InSim.Packet.ISP_JRR:
