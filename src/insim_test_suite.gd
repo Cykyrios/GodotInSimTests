@@ -64,7 +64,8 @@ func add_buttons() -> void:
 		var _discard := button.pressed.connect(_on_button_pressed.bind(packet_type))
 		var packet := create_packet(packet_type)
 		if not packet.sendable or packet_type in NON_STANDARD_PACKETS:
-			button.disabled = true
+			if not has_method("test_%s_packet" % [button.text.right(3)]):
+				button.disabled = true
 		standard_packets_vbox.add_child(button)
 	for i in InSim.Tiny.size():
 		var subtype := InSim.Tiny.values()[i] as InSim.Tiny
