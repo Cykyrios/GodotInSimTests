@@ -389,7 +389,7 @@ func test_IPB_packet() -> void:
 
 func test_JRR_packet() -> void:
 	var packet := InSimJRRPacket.new()
-	packet.player_id = 1
+	packet.plid = 1
 	packet.action = InSim.JRRAction.JRR_RESET_NO_REPAIR
 	packet.start_pos.flags |= 0x80
 	packet.start_pos.gis_position = Vector3(randf_range(-2000, 2000), randf_range(-2000, 2000), 50)
@@ -457,7 +457,7 @@ func test_PLH_packet() -> void:
 	packet.req_i = 1
 	packet.nump = 1
 	var hcap := PlayerHandicap.new()
-	hcap.player_id = 2
+	hcap.plid = 2
 	hcap.flags |= 2
 	hcap.h_tres = 50
 	packet.hcaps.append(hcap)
@@ -467,10 +467,10 @@ func test_PLH_packet() -> void:
 func test_REO_packet() -> void:
 	var packet := InSimREOPacket.new()
 	packet.num_players = 4
-	packet.player_ids[0] = 1
-	packet.player_ids[1] = 2
-	packet.player_ids[2] = 3
-	packet.player_ids[3] = 4
+	packet.plids[0] = 1
+	packet.plids[1] = 2
+	packet.plids[2] = 3
+	packet.plids[3] = 4
 	insim.send_packet(packet)
 
 
