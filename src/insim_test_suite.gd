@@ -60,7 +60,7 @@ func add_buttons() -> void:
 	for i in InSim.Packet.size():
 		var packet_type := InSim.Packet.values()[i] as InSim.Packet
 		var button := Button.new()
-		button.text = InSim.Packet.keys()[i]
+		button.text = str(InSim.Packet.keys()[i])
 		var _discard := button.pressed.connect(_on_button_pressed.bind(packet_type))
 		var packet := create_packet(packet_type)
 		if not packet.sendable or packet_type in NON_STANDARD_PACKETS:
@@ -69,7 +69,7 @@ func add_buttons() -> void:
 	for i in InSim.Tiny.size():
 		var subtype := InSim.Tiny.values()[i] as InSim.Tiny
 		var button := Button.new()
-		button.text = InSim.Tiny.keys()[i]
+		button.text = str(InSim.Tiny.keys()[i])
 		var _discard := button.pressed.connect(_on_button_pressed.bind(InSim.Packet.ISP_TINY, i))
 		var packet := create_packet(InSim.Packet.ISP_TINY, subtype)
 		if not packet.sendable:
@@ -78,7 +78,7 @@ func add_buttons() -> void:
 	for i in InSim.Small.size():
 		var subtype := InSim.Small.values()[i] as InSim.Small
 		var button := Button.new()
-		button.text = InSim.Small.keys()[i]
+		button.text = str(InSim.Small.keys()[i])
 		var _discard := button.pressed.connect(_on_button_pressed.bind(InSim.Packet.ISP_SMALL, i))
 		var packet := create_packet(InSim.Packet.ISP_SMALL, subtype)
 		if not packet.sendable:
@@ -87,7 +87,7 @@ func add_buttons() -> void:
 	for i in InSim.TTC.size():
 		var subtype := InSim.TTC.values()[i] as InSim.TTC
 		var button := Button.new()
-		button.text = InSim.TTC.keys()[i]
+		button.text = str(InSim.TTC.keys()[i])
 		var _discard := button.pressed.connect(_on_button_pressed.bind(InSim.Packet.ISP_TTC, i))
 		var packet := create_packet(InSim.Packet.ISP_TTC, subtype)
 		if not packet.sendable:
