@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ohvswosiqipc"]
 
-[ext_resource type="Script" path="res://src/insim_test_suite.gd" id="1_jp6ns"]
+[ext_resource type="Script" uid="uid://b43jrub4gq666" path="res://src/insim_test_suite.gd" id="1_jp6ns"]
 
 [node name="InSimTests" type="MarginContainer"]
 anchors_preset = 15
