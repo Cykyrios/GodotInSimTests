@@ -240,6 +240,10 @@ func create_packet(type: InSim.Packet, subtype := -1) -> InSimPacket:
 			packet = InSimPLHPacket.new()
 		InSim.Packet.ISP_IPB:
 			packet = InSimIPBPacket.new()
+		InSim.Packet.ISP_AIC:
+			packet = InSimAICPacket.new()
+		InSim.Packet.ISP_AII:
+			packet = InSimAIIPacket.new()
 		InSim.Packet.IRP_ARQ:
 			packet = RelayARQPacket.new()
 		InSim.Packet.IRP_ARP:
@@ -311,6 +315,25 @@ func test_ACR_packet() -> void:
 	insim.send_packet(packet)
 	packet.msg = "/wind=2"
 	insim.send_packet(packet)
+
+
+func test_AIC_packet() -> void:
+	var send_ai_control := func send_ai_control(plid: int, input: int, value: int) -> void:
+		var packet := InSimAICPacket.new()
+		packet.plid = plid
+		packet.input = input as InSim.AIControl
+		packet.value = value
+		insim.send_packet(packet)
+	var ai_plid := 0
+	send_ai_control.call(ai_plid, InSim.AIControl.CS_EXTRALIGHT, 1)
+	await get_tree().create_timer(0.5).timeout
+	send_ai_control.call(ai_plid, InSim.AIControl.CS_FOGREAR, 1)
+	await get_tree().create_timer(0.5).timeout
+	send_ai_control.call(ai_plid, InSim.AIControl.CS_FOGFRONT, 1)
+	await get_tree().create_timer(0.5).timeout
+	send_ai_control.call(ai_plid, InSim.AIControl.CS_INDICATORS, 4)
+	await get_tree().create_timer(0.5).timeout
+	send_ai_control.call(ai_plid, 255, 0)
 
 
 func test_AXM_packet() -> void:
@@ -551,6 +574,8 @@ func test_SMALL_packet(subtype: InSim.Small) -> void:
 				await get_tree().create_timer(0.25).timeout
 			insim.send_packet(InSimSmallPacket.new(0, subtype, 0x7f))
 			return
+		InSim.Small.SMALL_AII:
+			value = 0
 	insim.send_packet(InSimSmallPacket.new(1, subtype, value))
 
 
@@ -680,6 +705,8 @@ func _on_button_pressed(packet_type: InSim.Packet, subtype := -1) -> void:
 			test_PLH_packet()
 		InSim.Packet.ISP_IPB:
 			test_IPB_packet()
+		InSim.Packet.ISP_AIC:
+			test_AIC_packet()
 		InSim.Packet.IRP_ARQ:
 			test_relay_ARQ_packet()
 		InSim.Packet.IRP_HLR:
