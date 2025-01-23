@@ -420,19 +420,19 @@ func test_MOD_packet() -> void:
 
 func test_MSL_packet() -> void:
 	var packet := InSimMSLPacket.new()
-	packet.msg = "This is a ^1TEST^8 message - ^1日本語^0, etc."
+	packet.msg = "This is a ^1TEST^8 message - ^1日本語^7, ‹—›, ^0etc."
 	insim.send_packet(packet)
 
 
 func test_MST_packet() -> void:
 	var packet := InSimMSTPacket.new()
-	packet.msg = "This is a ^2TEST^8 message - ^7日本語^9, etc."
+	packet.msg = "This is a ^2TEST^8 message - ^7日本語^9, ‹—›, etc."
 	insim.send_packet(packet)
 
 
 func test_MSX_packet() -> void:
 	var packet := InSimMSXPacket.new()
-	packet.msg = "This is a ^3TEST^8 message - ^9日本語^6, etc."
+	packet.msg = "This is a ^3TEST^8 message - ^9日本語^6, ‹—›, etc."
 	insim.send_packet(packet)
 
 
