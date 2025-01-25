@@ -318,22 +318,38 @@ func test_ACR_packet() -> void:
 
 
 func test_AIC_packet() -> void:
-	var send_ai_control := func send_ai_control(plid: int, input: int, value: int) -> void:
-		var packet := InSimAICPacket.new()
-		packet.plid = plid
-		packet.input = input as InSim.AIControl
-		packet.value = value
-		insim.send_packet(packet)
-	var ai_plid := 0
-	send_ai_control.call(ai_plid, InSim.AIControl.CS_EXTRALIGHT, 1)
+	var create_control := func create_control(input: int, time: float, value: int) -> AIInputVal:
+		var ai_input := AIInputVal.new()
+		ai_input.input = input
+		ai_input.gis_time = time
+		ai_input.value = value
+		ai_input.time = int(ai_input.gis_time * AIInputVal.TIME_MULTIPLIER)
+		return ai_input
+	var send_single_control := func send_single_control(
+		plid: int, input: int, time: float, value: int
+	) -> void:
+		var single_packet := InSimAICPacket.new()
+		single_packet.plid = plid
+		single_packet.inputs.append(create_control.call(input, time, value))
+		insim.send_packet(single_packet)
+	var ai_plid := 1  # Must match an AI car's PLID
+	var packet := InSimAICPacket.new()
+	packet.plid = ai_plid
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_EXTRALIGHT, 0.5, 1))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_FOGREAR, 1, 1))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_FOGFRONT, 1, 1))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_FLASH, 1, 1))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_HORN, 1.5, 1))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_MSX, 1.5, 53_000))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_THROTTLE, 1.5, 23_000))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_BRAKE, 1.2, 15_000))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_CLUTCH, 0.8, 45_000))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_HANDBRAKE, 0.8, 29_000))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_LOOK, 0.5, 6))
+	packet.inputs.append(create_control.call(InSim.AIControl.CS_INDICATORS, 0, 4))
+	insim.send_packet(packet)
 	await get_tree().create_timer(0.5).timeout
-	send_ai_control.call(ai_plid, InSim.AIControl.CS_FOGREAR, 1)
-	await get_tree().create_timer(0.5).timeout
-	send_ai_control.call(ai_plid, InSim.AIControl.CS_FOGFRONT, 1)
-	await get_tree().create_timer(0.5).timeout
-	send_ai_control.call(ai_plid, InSim.AIControl.CS_INDICATORS, 4)
-	await get_tree().create_timer(0.5).timeout
-	send_ai_control.call(ai_plid, 255, 0)
+	send_single_control.call(ai_plid, InSim.AIControl.CS_INDICATORS, 0, 1)
 
 
 func test_AXM_packet() -> void:
@@ -575,7 +591,7 @@ func test_SMALL_packet(subtype: InSim.Small) -> void:
 			insim.send_packet(InSimSmallPacket.new(0, subtype, 0x7f))
 			return
 		InSim.Small.SMALL_AII:
-			value = 0
+			value = 1  # AI car PLID
 	insim.send_packet(InSimSmallPacket.new(1, subtype, value))
 
 
