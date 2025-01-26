@@ -318,7 +318,9 @@ func test_ACR_packet() -> void:
 
 
 func test_AIC_packet() -> void:
-	var create_control := func create_control(input: int, time: float, value: int) -> AIInputVal:
+	var create_control := func create_control(
+		input: InSim.AIControl, time: float, value: int
+	) -> AIInputVal:
 		var ai_input := AIInputVal.new()
 		ai_input.input = input
 		ai_input.gis_time = time
